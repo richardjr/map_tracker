@@ -9,7 +9,7 @@ const mt_spot_tracker = require('./mt_spot_tracker.js');
 global_config = {
 
     ng_endpoint : 'https://dev-api3.nautoguide.com/devrds/v2/api',
-    ng_token    : 'QW123RT6Y',
+    ng_token    : '<>',
     schema : 'adventuresyndicate',
     app : 'map_tracker'
 };
