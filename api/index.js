@@ -11,7 +11,8 @@ global_config = {
     ng_endpoint : 'https://dev-api3.nautoguide.com/devrds/v2/api',
     ng_token    : '<>',
     schema : 'adventuresyndicate',
-    app : 'map_tracker'
+    app : 'map_tracker',
+    org_id: 'ST01'
 };
 
 app.use(cors());
