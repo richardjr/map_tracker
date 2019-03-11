@@ -31,7 +31,7 @@ if(payload_param.operation === 'INSERT' && payload_param.feature_type.feature_ty
 
     /** First find their last mileage record **/
 
-    var last_distance = plv8.execute("SELECT attributes::JSON as attributes FROM features WHERE attributes @> jsonb_build_object('feature_type', 'spot_tracker_point', 'org_name', $1) ORDER BY feature_id DESC LIMIT 1", [payload_param.new.attributes.org_name])[0];
+    var last_distance = plv8.execute("SELECT attributes::JSON as attributes FROM features WHERE attributes @> jsonb_build_object('feature_type', 'spot_tracker_point', 'org_id', $1) ORDER BY feature_id DESC LIMIT 1", [org_check.json_data.org_id])[0];
 
     var point,new_distance;
 
@@ -59,7 +59,9 @@ if(payload_param.operation === 'INSERT' && payload_param.feature_type.feature_ty
                 distance: new_distance,
                 messengerName: org_check.json_data.org_name,
                 org_name: org_check.json_data.org_name,
-                point_type : 'derived'
+                org_id: org_check.json_data.org_id,
+                point_type : 'derived',
+                org_rider : payload_param.new.attributes.org_rider !== undefined ? payload_param.new.attributes.org_rider : org_check.json_data.org_name + ' total'
             }
         }
     ]);
