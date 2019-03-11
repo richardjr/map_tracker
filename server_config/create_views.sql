@@ -1,3 +1,5 @@
+--VIEWS FOR MAP DISPLAYS
+
 DROP VIEW IF EXISTS ng_adventuresyndicate.tracker_line_strings;
 
 CREATE VIEW ng_adventuresyndicate.tracker_line_strings AS
@@ -29,3 +31,12 @@ SELECT distinct on(attributes->>'org_name') feature_id,
 FROM ng_adventuresyndicate.features
 WHERE (attributes->>'distance') IS NOT NULL
 ORDER BY attributes->>'org_name', (attributes->>'distance')::NUMERIC DESC;
+
+DROP VIEW IF EXISTS ng_adventuresyndicate.route;
+CREATE VIEW ng_adventuresyndicate.route AS
+SELECT  feature_id,
+        wkb_geometry,
+        attributes
+        layer
+FROM ng_adventuresyndicate.features
+WHERE attributes @> jsonb_build_object('route_name',(SELECT json->>'route_name' FROM ng_adventuresyndicate.application_parameter WHERE name = 'active_route'));

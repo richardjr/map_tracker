@@ -38,7 +38,9 @@ module.exports = {
                            messengerId: messages[i].messengerId,
                            dateTime: messages[i].dateTime,
                            messengerName: messages[i].messengerName,
-                           feature_type: 'spot_tracker_point'
+                           feature_type: 'spot_tracker_point',
+                           org_id: global_config.org_id,
+                           point_type: 'tracked'
 
                        }
                    }
