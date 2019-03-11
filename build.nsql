@@ -1,3 +1,4 @@
 --FILE/SQL: configuration/create-company.sql
 FILE/SQL: functions/point_along_route.sql
 FILE/SQL: workflow/feature_workflow_script.js
+FILE/SQL: functions/distance_along_route.sql

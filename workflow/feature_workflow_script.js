@@ -6,6 +6,9 @@ plv8.elog(NOTICE, 'ADVENTURE SYNDICATE FEATURE WORKFLOW ' + JSON.stringify(paylo
 
 /** When an organisation adds a mileage we create a new marker point along the route line so you can see a virtual journey and history **/
 
+/** TODO we need to check for a valid code **/
+
+
 if(payload_param.operation === 'INSERT' && payload_param.feature_type.feature_type === 'distance_record') {
 
     plv8.elog(NOTICE, 'NEW DISTANCE RECORD');
@@ -46,6 +49,23 @@ if(payload_param.operation === 'INSERT' && payload_param.feature_type.feature_ty
     ]);
 
     return feature;
+}
+
+/** When a SPOT tracker marker is added we calculate distance along route and add to marker **/
+
+if(payload_param.operation === 'INSERT' && payload_param.feature_type.feature_type === 'spot_tracker_point' && payload_param.new.attributes.distance === undefined) {
+
+    var distance  = plv8.execute("SELECT ng_adventuresyndicate.distance_along_route('Adventure Syndicate LEJOG',$1::GEOMETRY) as metres", [payload_param.new.wkb_geometry])[0];
+
+    plv8.elog(NOTICE, JSON.stringify(distance));
+
+    if(distance.metres !== undefined) {
+
+        var update = plv8.execute("UPDATE features SET attributes = attributes || jsonb_build_object('distance', $1) WHERE feature_id = $2", [distance.metres, payload_param.new.feature_id]);
+    }
+
+    return update;
+
 }
 
 $$ LANGUAGE PLV8;
