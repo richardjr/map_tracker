@@ -6,14 +6,9 @@ const cors = require('cors');
 
 const mt_spot_tracker = require('./mt_spot_tracker.js');
 
-global_config = {
+/** All external config goes in here */
 
-    ng_endpoint : 'https://dev-api3.nautoguide.com/devrds/v2/api',
-    ng_token    : 'QW123RT6Y',
-    schema : 'adventuresyndicate',
-    app : 'map_tracker',
-    org_id: 'ST01'
-};
+global_config = require('./config.json');
 
 app.use(cors());
 
@@ -25,7 +20,6 @@ app.get('/', function (req, res) {
 
 app.get('/track', function(req,res) {
 
-    console.log('************* TRACK *********');
 
     // Firstly retrieve a list of tracker IDs that we are going to update
 

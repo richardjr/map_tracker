@@ -2,7 +2,7 @@ module.exports = {
 
     tracker_list : function() {
 
-        return ['0cksl42y26P9oM7RdeHpc2hMrcqYBDeqU'];
+        return global_config.tracker_list;
     },
 
     update_tracker : function(tracker_gid) {
@@ -10,7 +10,7 @@ module.exports = {
         const fetchJson = require('fetch-json');
         const fetch = require('node-fetch');
 
-        let spot_url = 'https://api.findmespot.com/spot-main-web/consumer/rest-api/2.0/public/feed/' + tracker_gid + '/message.json';
+        let spot_url = global_config.spot_url + tracker_gid + '/message.json';
 
 
         fetchJson.get(spot_url).then(function(data) {
