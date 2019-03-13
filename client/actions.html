@@ -1,23 +1,44 @@
 <script id="init" type="text/html">
     <!-- init is always run automatically on startup -->
-    @templates.render({"targetId":"#content","template":"#basic"},{"queueRun":"Instant"});
+    @templates.render({
+        "targetId": "#content",
+        "template": "#basic"
+    }, {
+        "queueRun": "Instant"
+    });
     -openlayers.addMap({"center":[-327078.93,7341533.72],"zoom":6});
     -openlayers.addLayer({"name":"osm","type":"osm"});
+    -loop.multi({"targetId":"#list","template":"#leaderboardItem","data":["test","test","TEST"]});
 </script>
 
 <script id="basic" type="text/html">
     <div id="map"></div>
-    <div id="leaderboard"></div>
-    <div id="menu">
-        <button id="menu-toggle" @elements.addClass({"targetId":"#side-menu","class":"menu-open"},{"queueEvent":"mousedown"});>==</button>
-        <div id="side-menu" class="card side-menu">
-            <div class="menu-topper">
-                <button class="remove-shadow hide-button" @elements.removeClass({"targetId":"#side-menu","class":"menu-open"},{"queueEvent":"mousedown"});>==</button>
+    <div id="leaderboard" class="list">
+        <div class="list-title">
+            <span class="title">Leaderboard</span>
+            <div id="menu">
+                <button id="menu-toggle" @elements.addClass({"targetId":"#side-menu","class":"menu-open"},{"queueEvent":"mousedown"});>==</button>
+                <div id="side-menu" class="card side-menu">
+                    <div class="menu-topper">
+                        <button class="remove-shadow hide-button" @elements.removeClass({"targetId":"#side-menu","class":"menu-open"},{"queueEvent":"mousedown"});>==</button>
+                    </div>
+                    <div class="menu-item">About</div>
+                    <div class="menu-item">Register</div>
+                    <div class="menu-item">Add miles</div>
+                    <div class="menu-item">Contact us</div>
+                </div>
             </div>
-            <div class="menu-item">About</div>
-            <div class="menu-item">Register</div>
-            <div class="menu-item">Add miles</div>
-            <div class="menu-item">Contact us</div>
         </div>
+        <div id="list"></div>
     </div>
+</script>
+
+<script id="leaderboardItem" type="text/html">
+    <div class="list-item" @elements.addClass({"targetId":"#side-menu","class":"menu-open"},{"queueEvent":"mousedown"});>
+        <span>test text</span>
+    </div>
+</script>
+
+<script id="getLeaders" type="text/html">
+
 </script>
