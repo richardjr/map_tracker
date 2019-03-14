@@ -1,14 +1,26 @@
 <script id="init" type="text/html">
     <!-- init is always run automatically on startup -->
-    @templates.render({
-        "targetId": "#content",
-        "template": "#basic"
-    }, {
-        "queueRun": "Instant"
-    });
+    @templates.render({"targetId": "#overlayContainer","template": "#loading"},{"queueRun": "Instant"});
+    @templates.render({"targetId": "#content","template": "#basic"},{"queueRun": "Instant"});
     -openlayers.addMap({"center":[-327078.93,7341533.72],"zoom":6});
     -openlayers.addLayer({"name":"osm","type":"osm"});
-    -loop.multi({"targetId":"#list","template":"#leaderboardItem","data":["test","test","TEST"]});
+    -openlayers.addLayer({"name":"route","type":"vector","style":"styles.reportStyle"});
+    -openlayers.addLayer({"name":"spotPoints","type":"vector","style":"styles.reportStyle"});
+    -openlayers.addLayer({"name":"schoolPoints","type":"vector","style":"styles.schoolStyle"});
+    {{#include #getRoute}}
+    {{#include #getSpotPoints}}
+    {{#include #getLeaders}}
+     -templates.render({"targetId": "#overlayContainer", "template": "#empty"},{"queueRun": "Instant"});
+</script>
+
+<script id="empty" type="text/html">
+
+</script>
+
+<script id="loading" type="text/html">
+    <div id="loadingScreen">
+        <div class="lds-dual-ring"></div>
+    </div>
 </script>
 
 <script id="basic" type="text/html">
@@ -24,7 +36,7 @@
                     </div>
                     <div class="menu-item">About</div>
                     <div class="menu-item">Register</div>
-                    <div class="menu-item">Add miles</div>
+                    <div class="menu-item" @templates.render({"targetId": "#overlayContainer","template": "#mileageDialog"});>Add miles</div>
                     <div class="menu-item">Contact us</div>
                 </div>
             </div>
@@ -40,5 +52,22 @@
 </script>
 
 <script id="getLeaders" type="text/html">
+    <!-- -loop.multi({"targetId":"#list","template":"#leaderboardItem","data":["test","test","TEST"]}); -->
+</script>
 
+<script id="getRoute" type="text/ourthings">
+    -api.post({"url":"{{config.api}}","body":{"_token":"{{config.token}}","schema":"adventuresyndicate","app":"map_tracker", "api": "feature_api", "action": "get_geojson", "payload": {"_filters":[{"type": "json", "data": "features", "item": "attributes", "prefix": "F", "filter": {"feature_type": "route_line"}}]}}},{"memoryMode":"Session","memoryName":"mapRoute"});
+    -openlayers.addGeojson({"layer":"route","geojson":"{{!^JSON.stringify(memory.mapRoute.value.API.Response)}}"});
+    -openlayers.zoomToLayerExtent({"layer":"route"});
+</script>
+
+<script id="getSpotPoints" type="text/ourthings">
+    -api.post({"url":"{{config.api}}","body":{"_token":"{{config.token}}","schema":"adventuresyndicate","app":"map_tracker", "api": "feature_api", "action": "get_geojson", "payload": {"_filters":[{"type": "json", "data": "features", "item": "attributes", "prefix": "F", "filter": {"feature_type": "spot_tracker_points"}}]}}},{"memoryMode":"Session","memoryName":"spotPoints"});
+    -openlayers.addGeojson({"layer":"spotPoints","geojson":"{{!^JSON.stringify(memory.spotPoints.value.API.Response)}}"});
+    <!-- -openlayers.zoomToLayerExtent({"layer":"spotPoints"});-->
+</script>
+
+<script id="getSchools" type="text/ourthings">
+    -api.post({"url":"{{config.api}}","body":{"_token":"{{config.token}}","schema":"adventuresyndicate","app":"map_tracker", "api": "feature_api", "action": "get_geojson", "payload": {"_filters":[{"type": "json", "data": "features", "item": "attributes", "prefix": "F", "filter": {"feature_type": "spot_tracker_points"}}]}}},{"memoryMode":"Session","memoryName":"schoolPoints"});
+    -openlayers.addGeojson({"layer":"schoolPoints","geojson":"{{!^JSON.stringify(memory.schoolPoints.value.API.Response)}}"});
 </script>

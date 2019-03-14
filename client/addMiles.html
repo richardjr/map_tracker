@@ -1,0 +1,6 @@
+<script id="mileageDialog" type="text/html">
+    <div id="mileageBack" @templates.render({"targetId": "#overlayContainer","template": "#empty"});></div>
+    <div id="dialogContainer" class="card" >
+        <input type="text" name="fname" @templates.render({"targetId": "#overlayContainer","template": "#empty"},{"queueEvent":"oninput"});/>
+    </div>
+</script>

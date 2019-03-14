@@ -9,7 +9,7 @@
   "author": "Jake Barter",
   "license": "ISC",
   "dependencies": {
-    "@nautoguide/ourthings": "^0.1.5",
+    "@nautoguide/ourthings": "^0.1.7",
     "ol": "^5.3.1"
   },
   "devDependencies": {
