@@ -24,13 +24,25 @@ GROUP BY attributes->>'messengerName'
 DROP VIEW IF EXISTS ng_adventuresyndicate.tracker_points;
 
 CREATE VIEW ng_adventuresyndicate.tracker_points AS
+SELECT
+	feature_id,
+	wkb_geometry,
+	attributes || jsonb_build_object('position', ROW_NUMBER() OVER ()) as attributes,
+	layer,
+	feature_type_id
+FROM (
 SELECT distinct on(attributes->>'org_name') feature_id,
        wkb_geometry,
-       attributes,
-       layer
+       attributes || jsonb_build_object( 'dateTime', creation_date, 'distance_km', ROUND((attributes->>'distance')::NUMERIC/1000, 2), 'distance_miles', ROUND((attributes->>'distance')::NUMERIC * 0.000621371, 2)) as attributes,
+       layer,
+	   (SELECT feature_type_id FROM ng_adventuresyndicate.feature_type WHERE feature_type = 'spot_tracker_point') AS feature_type_id
 FROM ng_adventuresyndicate.features
-WHERE (attributes->>'distance') IS NOT NULL
-ORDER BY attributes->>'org_name', (attributes->>'distance')::NUMERIC DESC;
+WHERE feature_type_id = (SELECT feature_type_id FROM ng_adventuresyndicate.feature_type WHERE feature_type = 'spot_tracker_point')
+AND (attributes->>'distance') IS NOT NULL
+ORDER BY attributes->>'org_name', (attributes->>'distance')::NUMERIC DESC
+) FOO ORDER BY attributes->>'distance_km' DESC;
+
+
 
 DROP VIEW IF EXISTS ng_adventuresyndicate.route;
 CREATE VIEW ng_adventuresyndicate.route AS
