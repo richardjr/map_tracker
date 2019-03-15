@@ -10,5 +10,5 @@
 </script>
 
 <script id="submit" type="text/html">
-    @api.post({"url":"{{config.api}}","body":{"_token":"{{config.token}}","schema":"adventuresyndicate","app":"map_tracker", "api": "feature_api", "action": "add", "payload": {"_filters":[{"type": "json", "data": "features", "item": "attributes", "prefix": "F", "filter": {"feature_type": "distance_record","distance":"{{!memory.mileageForm.distance}}","org_id":"{{!memory.mileageForm.schoolID}}","org_rider":"{{!memory.mileageForm.riderName}}"}}]}}},{"queuePrepare":"submitMileage", "memoryMode":"Session","memoryName":"mileagePost","queueRun":"Instant"});
+    @api.post({"url":"{{config.api}}","body":{"_token":"{{config.token}}","schema":"adventuresyndicate","app":"map_tracker", "api": "feature_api", "action": "add", "payload": {"attributes": {"feature_type": "distance_record","distance":"{{!^memory.mileageForm.value.distance}}","org_id":"{{!memory.mileageForm.value.schoolID}}","org_rider":"{{!memory.mileageForm.value.riderName}}"}}}},{"queuePrepare":"submitMileage", "memoryMode":"Session","memoryName":"mileagePost","queueRun":"Instant"});
 </script>

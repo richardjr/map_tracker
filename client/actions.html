@@ -10,6 +10,7 @@
     {{#include #getRoute}}
     {{#include #getSpotPoints}}
     {{#include #getLeaders}}
+    {{#include #getSchools}}
      -templates.render({"targetId": "#overlayContainer", "template": "#empty"},{"queueRun": "Instant"});
 </script>
 
@@ -69,6 +70,6 @@
 </script>
 
 <script id="getSchools" type="text/ourthings">
-    -api.post({"url":"{{config.api}}","body":{"_token":"{{config.token}}","schema":"adventuresyndicate","app":"map_tracker", "api": "feature_api", "action": "get_geojson", "payload": {"_filters":[{"type": "json", "data": "features", "item": "attributes", "prefix": "F", "filter": {"feature_type": "spot_tracker_points"}}]}}},{"memoryMode":"Session","memoryName":"schoolPoints"});
+    -api.post({"url":"{{config.api}}","body":{"_token":"{{config.token}}","schema":"adventuresyndicate","app":"map_tracker", "api": "feature_api", "action": "get_geojson", "payload": {"_view": "tracker_points"}}},{"memoryMode":"Session","memoryName":"schoolPoints"});
     -openlayers.addGeojson({"layer":"schoolPoints","geojson":"{{!^JSON.stringify(memory.schoolPoints.value.API.Response)}}"});
 </script>

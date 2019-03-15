@@ -15,7 +15,7 @@ class Input extends Queueable {
 
     submitMileage(pid, json) {
         console.log('Submitting');
-        window.memory.mileageForm.distance *= 1609.344;
+        window.memory.mileageForm.value.distance *= 1609.344;
         const values = [
             {
                 value: window.memory.mileageForm.schoolID,
