@@ -29,13 +29,17 @@ SELECT
 	wkb_geometry,
 	attributes || jsonb_build_object('position', ROW_NUMBER() OVER ()) as attributes,
 	layer,
-	feature_type_id
+	feature_type_id,
+	creation_date,
+	acl
 FROM (
 SELECT distinct on(attributes->>'org_name') feature_id,
        wkb_geometry,
+	   creation_date,
        attributes || jsonb_build_object( 'dateTime', creation_date, 'distance_km', ROUND((attributes->>'distance')::NUMERIC/1000, 2), 'distance_miles', ROUND((attributes->>'distance')::NUMERIC * 0.000621371, 2)) as attributes,
        layer,
-	   (SELECT feature_type_id FROM ng_adventuresyndicate.feature_type WHERE feature_type = 'spot_tracker_point') AS feature_type_id
+	   feature_type_id,
+	   acl
 FROM ng_adventuresyndicate.features
 WHERE feature_type_id = (SELECT feature_type_id FROM ng_adventuresyndicate.feature_type WHERE feature_type = 'spot_tracker_point')
 AND (attributes->>'distance') IS NOT NULL
