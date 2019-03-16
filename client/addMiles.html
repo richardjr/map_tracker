@@ -1,6 +1,14 @@
 <script id="mileageDialog" type="text/html">
+    {{#include #submit}}
     <div id="mileageBack" @templates.render({"targetId": "#overlayContainer","template": "#empty"});></div>
     <div id="dialogContainer" class="card" >
-        <input type="text" name="fname" @templates.render({"targetId": "#overlayContainer","template": "#empty"},{"queueEvent":"oninput"});/>
+        <input id="schoolID" type="text" name="schoolID" @input.onchange({"memoryName":"schoolID","memoryGroup":"mileageForm"},{"queueEvent": "input"});/>
+        <input id="riderName" type="text" name="riderName" @input.onchange({"memoryName":"riderName","memoryGroup":"mileageForm"},{"queueEvent": "input"});/>
+        <input id="distance" type="number" name="distance" @input.onchange({"memoryName":"distance","memoryGroup":"mileageForm"},{"queueEvent": "change"});/>
+        <button id="mileageSubmit" @input.submitMileage({"name":"submitMileage"});>Submit Miles</button>
     </div>
+</script>
+
+<script id="submit" type="text/html">
+    @api.post({"url":"{{config.api}}","body":{"_token":"{{config.token}}","schema":"adventuresyndicate","app":"map_tracker", "api": "feature_api", "action": "add", "payload": {"_filters":[{"type": "json", "data": "features", "item": "attributes", "prefix": "F", "filter": {"feature_type": "distance_record","distance":"{{!memory.mileageForm.distance}}","org_id":"{{!memory.mileageForm.schoolID}}","org_rider":"{{!memory.mileageForm.riderName}}"}}]}}},{"queuePrepare":"submitMileage", "memoryMode":"Session","memoryName":"mileagePost","queueRun":"Instant"});
 </script>

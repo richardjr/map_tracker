@@ -5,6 +5,7 @@ import Elements from '@nautoguide/ourthings/Queueable/Elements';
 import Openlayers from '@nautoguide/ourthings/Queueable/Openlayers';
 import Internals from '@nautoguide/ourthings/Queueable/Internals';
 import Loop from './Loop';
+import Input from './Input';
 
 let queue;
 queue = new Queue({
@@ -14,6 +15,7 @@ queue = new Queue({
     openlayers: Openlayers,
     internals: Internals,
     loop: Loop,
+    input: Input,
 });
 window.queue=queue;
 

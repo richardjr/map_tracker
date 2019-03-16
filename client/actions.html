@@ -52,7 +52,8 @@
 </script>
 
 <script id="getLeaders" type="text/html">
-    <!-- -loop.multi({"targetId":"#list","template":"#leaderboardItem","data":["test","test","TEST"]}); -->
+    -api.post({"url":"{{config.api}}","body":{"_token":"{{config.token}}","schema":"adventuresyndicate","app":"map_tracker", "api": "reporting_api", "action": "run_report", "payload":{"report_name":"leaderboard"}}},{"memoryMode":"Session","memoryName":"leaderboard"});
+    -loop.multi({"targetId":"#list","template":"#leaderboardItem","data":"{{!^JSON.stringify(memory.leaderboard.value.API.Response)}}"});
 </script>
 
 <script id="getRoute" type="text/ourthings">
