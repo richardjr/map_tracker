@@ -1,7 +1,7 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Open Sans', sans-serif;
+    font-family: "Open Sans", "Helvetica", "Arial", sans-serif;
 }
 
 #loadingScreen {
@@ -80,15 +80,54 @@ button:hover {
 
 .list-item {
     display: flex;
-    padding: 16px;
-    border-bottom: 1px solid rgba(0,0,0,0.12);
+    padding: 11px 16px;
     align-items: center;
+    width: 100%;
+    position: relative;
+    box-sizing: border-box;
+    text-align: left;
+    justify-content: flex-start;
+    text-decoration: none;
+}
+
+.list-item-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    position: relative;
+    overflow: hidden;
+    font-size: 1.25rem;
+    align-items: center;
+    flex-shrink: 0;
+    user-select: none;
+    border-radius: 50%;
+    justify-content: center;
+}
+
+.position-1 { background: rgba(255,223,0,0.3); }
+.position-2 { background: rgba(192,192,192,0.3); }
+.position-3 { background: rgba(205, 127, 50, 0.3); }
+
+.list-item-title {
+    color: rgba(0, 0, 0, 0.87);
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
+}
+
+.list-item-secondary {
+    color: rgba(0, 0, 0, 0.54);
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0.01071em;
 }
 
 .list-secondary {
     display: flex;
     flex-direction: column;
-    margin-left: 8px;
+    margin-left: 16px;
 }
 
 .title {
@@ -175,6 +214,62 @@ button:hover {
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 20000;
+    width: 50%;
+    max-width: 300px;
+    min-width: 100px;
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+}
+
+.card-content {
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-topper {
+    display: flex;
+    border-bottom: 1px solid rgba(0,0,0,0.07);
+    margin-bottom: 8px;
+    padding: 8px;
+    align-items: center;
+}
+
+.topper-title {
+    flex-grow: 1;
+    font-size: 1.2em;
+}
+
+.input-couple {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 8px;
+}
+
+.input-couple input {
+    -webkit-appearance: none;
+    border: none;
+    padding: 8px;
+    background: rgba(0,0,0,0.07);
+    border-radius: 3px;
+    margin-top: 8px;
+}
+
+.input-couple input:focus {
+    outline: none;
+    border-bottom-color: #3355bb;
+}
+
+#mileageSubmit {
+    margin-top: 16px;
+    background: #3355bb;
+    color: #fff;
+}
+
+#mileageSubmit:hover {
+    background: #1c3067;
+    cursor: pointer;
 }
 
 @media screen and (max-width: 500px) {
@@ -187,6 +282,19 @@ button:hover {
 
     .menu-open {
         right: 0;
+    }
+
+    #dialogContainer {
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        max-width: unset;
+        transform: none;
+    }
+
+    .card-content {
+        padding: 16px;
     }
 }
 

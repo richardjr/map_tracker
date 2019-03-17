@@ -5,8 +5,16 @@ class Loop extends Queueable {
         let templateHTML = '<div class="list-test">';
         let htmlCache = document.querySelector(json.template).innerHTML;
         window.memory.leaderboardRankings = [];
-        for(let data of json.data) {
-            console.log(data);
+
+        let dataList = json.data;
+        dataList.sort((a,b) => {
+            if (Number(a.distance_miles) < Number(b.distance_miles)) return 1;
+            if (Number(a.distance_miles) > Number(b.distance_miles)) return -1;
+            return 0;
+        });
+        console.log(dataList);
+
+        for(let data of dataList) {
             /* Data object:
             * date: "11/03/2019 21:03"
             * distance_km: "2.00"
@@ -18,10 +26,10 @@ class Loop extends Queueable {
             window.memory.leaderboardRankings.push(data);
             templateHTML +=
                 '<div class="list-item">' +
-                '  <span>#' + data.position +  '</span>' +
+                '  <span class="list-item-icon position-' + data.position + '">#' + data.position +  '</span>' +
                 '  <div class="list-secondary">' +
-                '    <span style="font-size:1.3em">' + data.org_name +  '</span>' +
-                '    <span style="font-size:0.8em;color:#666">' + data.distance_miles +  ' Miles</span>' +
+                '    <span class="list-item-title">' + data.org_name +  '</span>' +
+                '    <span class="list-item-secondary">' + data.distance_miles +  ' Miles</span>' +
                 '  </div>' +
                 '</div>';
         }

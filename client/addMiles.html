@@ -1,14 +1,31 @@
 <script id="mileageDialog" type="text/html">
     {{#include #submit}}
     <div id="mileageBack" @templates.render({"targetId": "#overlayContainer","template": "#empty"});></div>
-    <div id="dialogContainer" class="card" >
-        <input id="schoolID" type="text" name="schoolID" @input.onchange({"memoryName":"schoolID","memoryGroup":"mileageForm"},{"queueEvent": "input"});/>
-        <input id="riderName" type="text" name="riderName" @input.onchange({"memoryName":"riderName","memoryGroup":"mileageForm"},{"queueEvent": "input"});/>
-        <input id="distance" type="number" name="distance" @input.onchange({"memoryName":"distance","memoryGroup":"mileageForm"},{"queueEvent": "change"});/>
-        <button id="mileageSubmit" @input.submitMileage({"name":"submitMileage"});>Submit Miles</button>
+    <div id="dialogContainer" class="card">
+        <div class="card-topper">
+            <span class="topper-title">Add Miles</span>
+            <button style="box-shadow: none;" @templates.render({"targetId": "#overlayContainer","template": "#empty"});>X</button>
+        </div>
+        <div class="card-content">
+            <div class="input-couple">
+                <span>School ID:</span>
+                <input id="schoolID" type="text" name="schoolID" @input.onchange({"memoryName":"schoolID","memoryGroup":"mileageForm"},{"queueEvent": "input"});/>
+            </div>
+            <div class="input-couple">
+                <span>Rider name:</span>
+                <input id="riderName" type="text" name="riderName" @input.onchange({"memoryName":"riderName","memoryGroup":"mileageForm"},{"queueEvent": "input"});/>
+            </div>
+            <div class="input-couple">
+                <span>Distance (miles):</span>
+                <input id="distance" type="number" name="distance" @input.onchange({"memoryName":"distance","memoryGroup":"mileageForm"},{"queueEvent": "change"});/>
+            </div>
+            <button id="mileageSubmit" @input.submitMileage({"name":"submitMileage"});>Submit Miles</button>
+        </div>
     </div>
 </script>
 
 <script id="submit" type="text/html">
     @api.post({"url":"{{config.api}}","body":{"_token":"{{config.token}}","schema":"adventuresyndicate","app":"map_tracker", "api": "feature_api", "action": "add", "payload": {"attributes": {"feature_type": "distance_record","distance":"{{!^memory.mileageForm.value.distance}}","org_id":"{{!memory.mileageForm.value.schoolID}}","org_rider":"{{!memory.mileageForm.value.riderName}}"}}}},{"queuePrepare":"submitMileage", "memoryMode":"Session","memoryName":"mileagePost","queueRun":"Instant"});
+    -templates.render({"targetId": "#overlayContainer","template": "#empty"});
+    {{#include #getLeaders}}
 </script>
