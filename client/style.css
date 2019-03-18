@@ -56,6 +56,7 @@ button:focus {
 
 button:hover {
     background: #aaa;
+    cursor: pointer;
 }
 
 .card {
@@ -193,6 +194,7 @@ button:hover {
 
 .menu-item:hover {
     background: #aaa;
+    cursor: pointer;
 }
 
 #mileageBack {

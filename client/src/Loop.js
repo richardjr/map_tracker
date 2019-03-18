@@ -3,7 +3,6 @@ import Queueable from "@nautoguide/ourthings/Queueable";
 class Loop extends Queueable {
     multi(pid,json) {
         let templateHTML = '<div class="list-test">';
-        let htmlCache = document.querySelector(json.template).innerHTML;
         window.memory.leaderboardRankings = [];
 
         let dataList = json.data;
@@ -14,6 +13,7 @@ class Loop extends Queueable {
         });
         console.log(dataList);
 
+        let i = 1;
         for(let data of dataList) {
             /* Data object:
             * date: "11/03/2019 21:03"
@@ -26,12 +26,13 @@ class Loop extends Queueable {
             window.memory.leaderboardRankings.push(data);
             templateHTML +=
                 '<div class="list-item">' +
-                '  <span class="list-item-icon position-' + data.position + '">#' + data.position +  '</span>' +
+                '  <span class="list-item-icon position-' + i + '">#' + i +  '</span>' +
                 '  <div class="list-secondary">' +
                 '    <span class="list-item-title">' + data.org_name +  '</span>' +
                 '    <span class="list-item-secondary">' + data.distance_miles +  ' Miles</span>' +
                 '  </div>' +
                 '</div>';
+            i++;
         }
 
         templateHTML += '</div>';
