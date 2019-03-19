@@ -77,7 +77,6 @@
 </script>
 
 <script id="updatePoints" type="text/ourthings">
-    @internals.execute({"name":"updatePoints"},{"queueTimer":10000});
     @api.post({
         "url":"{{config.api}}",
         "body":{
@@ -97,5 +96,6 @@
     });
     -openlayers.clearLayer({"layer":"schoolPoints"});
     -openlayers.addGeojson({"layer":"schoolPoints","geojson":"{{!^JSON.stringify(memory.schoolPoints.value.API.Response)}}"});
-    -internals.execute({"name":"updatePoints"},{"queueTimer":10000});
+    -internals.execute({"name":"updatePoints"},{"queueTimer":10000,"queueRun":"Instant"});
+    @internals.execute({"name":"updatePoints"},{"queueTimer":10000,"queueRun":"Instant"});
 </script>
