@@ -11,7 +11,8 @@
     {{#include #getSpotPoints}}
     {{#include #getLeaders}}
     {{#include #getSchools}}
-     -templates.render({"targetId": "#overlayContainer", "template": "#empty"},{"queueRun": "Instant"});
+    -templates.render({"targetId": "#overlayContainer", "template": "#empty"},{"queueRun": "Instant"});
+    {{#include #updatePoints}}
 </script>
 
 <script id="empty" type="text/html">
@@ -71,5 +72,30 @@
 
 <script id="getSchools" type="text/ourthings">
     -api.post({"url":"{{config.api}}","body":{"_token":"{{config.token}}","schema":"adventuresyndicate","app":"map_tracker", "api": "feature_api", "action": "get_geojson", "payload": {"_view": "tracker_points"}}},{"memoryMode":"Session","memoryName":"schoolPoints"});
+    -openlayers.clearLayer({"layer":"schoolPoints"});
     -openlayers.addGeojson({"layer":"schoolPoints","geojson":"{{!^JSON.stringify(memory.schoolPoints.value.API.Response)}}"});
+</script>
+
+<script id="updatePoints" type="text/ourthings">
+    @internals.execute({"name":"updatePoints"},{"queueTimer":10000});
+    @api.post({
+        "url":"{{config.api}}",
+        "body":{
+            "_token":"{{config.token}}",
+            "schema":"adventuresyndicate",
+            "app":"map_tracker",
+            "api": "feature_api",
+            "action": "get_geojson",
+            "payload": {
+                "_view": "tracker_points"
+            }
+        }
+    }, {
+        "memoryMode":"Session",
+        "memoryName":"schoolPoints",
+        "queuePrepare":"updatePoints"
+    });
+    -openlayers.clearLayer({"layer":"schoolPoints"});
+    -openlayers.addGeojson({"layer":"schoolPoints","geojson":"{{!^JSON.stringify(memory.schoolPoints.value.API.Response)}}"});
+    -internals.execute({"name":"updatePoints"},{"queueTimer":10000});
 </script>
