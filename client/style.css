@@ -80,6 +80,7 @@ button:hover {
 }
 
 .list-item {
+    transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,border 250ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
     display: flex;
     padding: 11px 16px;
     align-items: center;
@@ -89,6 +90,13 @@ button:hover {
     text-align: left;
     justify-content: flex-start;
     text-decoration: none;
+    border-radius: 0;
+}
+
+.list-item:hover {
+    background: rgba(0,0,0,0.12);
+    cursor: pointer;
+    border-radius: 3px;
 }
 
 .list-item-icon {
