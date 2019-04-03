@@ -12,6 +12,10 @@ import WMTS from 'ol/source/WMTS';
 import WMTSTileGrid  from 'ol/tilegrid/WMTS';
 import WKT from 'ol/format/WKT';
 
+import MVT from 'ol/format/MVT';
+import VectorTileLayer from 'ol/layer/VectorTile';
+import VectorTileSource from 'ol/source/VectorTile';
+
 import GeoJSON from 'ol/format/GeoJSON';
 import {fromLonLat,units,epsg3857,epsg4326} from 'ol/proj';
 import Select from 'ol/interaction/Select.js';
@@ -19,7 +23,9 @@ import {click, pointerMove, altKeyOnly} from 'ol/events/condition.js';
 import proj4 from "proj4";
 import {register} from 'ol/proj/proj4';
 import {get as getProjection} from 'ol/proj'
-import {Circle, Fill, Stroke, Style} from 'ol/style.js';
+import {Circle, Fill, Stroke, Style, Icon, Text} from 'ol/style.js';
+
+import createMapboxStreetsV6Style from './Styles/mapboxStyling';
 
 proj4.defs([
     ["EPSG:27700", "+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.999601 +x_0=400000 +y_0=-100000 +ellps=airy +towgs84=446.448,-125.157,542.060,0.1502,0.2470,0.8421,-20.4894 +datum=OSGB36 +units=m +no_defs"]
@@ -168,6 +174,21 @@ export default class Openlayers extends Queueable {
             source: new OSM()
         });
         return olLayer;
+    }
+
+    _addLayer_mapbox(options) {
+        return new VectorTileLayer({
+            source: new VectorTileSource({
+                attributions: '© <a href="https://www.mapbox.com/map-feedback/">Mapbox</a> ' +
+                '© <a href="https://www.openstreetmap.org/copyright">' +
+                'OpenStreetMap contributors</a>',
+                format: new MVT(),
+                url: 'https://{a-d}.tiles.mapbox.com/v4/mapbox.mapbox-streets-v6/{z}/{x}/{y}.vector.pbf?access_token=' + options.key ,
+                maxZoom: 14
+            }),
+            style: createMapboxStreetsV6Style(Style, Fill, Stroke, Icon, Text),
+            declutter: true,
+        });
     }
 
     /**

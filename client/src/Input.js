@@ -25,6 +25,22 @@ class Input extends Queueable {
             })
         ];
 
+        const urlParams = new URLSearchParams(window.location.search);
+        const categories = urlParams.get('categories');
+        if (categories ) {
+            window.memory.filters.value = categories.split(',');
+
+            if (window.memory.filters.value.indexOf('school') < 0) {
+                document.querySelector('#schoolsSVG').classList.add('hidden-svg');
+            }
+
+            if (window.memory.filters.value.indexOf('workplace') < 0) {
+                document.querySelector('#workplaceSVG').classList.add('hidden-svg');
+            }
+        }
+
+
+
         for(const value of window.memory.filters.value) {
             filterList.push(JSON.stringify({
                 type: "json",
