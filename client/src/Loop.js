@@ -4,14 +4,17 @@ class Loop extends Queueable {
     multi(pid,json) {
         let templateHTML = '<div class="list-test">';
         window.memory.leaderboardRankings = [];
-
         let dataList = json.data;
-        dataList.sort((a,b) => {
-            if (Number(a.distance_miles) < Number(b.distance_miles)) return 1;
-            if (Number(a.distance_miles) > Number(b.distance_miles)) return -1;
-            return 0;
-        });
-        console.log(dataList);
+
+        if(dataList.length > 0) {
+            dataList.sort((a, b) => {
+                if (Number(a.distance_miles) < Number(b.distance_miles)) return 1;
+                if (Number(a.distance_miles) > Number(b.distance_miles)) return -1;
+                return 0;
+            });
+        } else {
+            dataList = [];
+        }
 
         let i = 1;
         for(let data of dataList) {
