@@ -2,11 +2,34 @@
     <!-- init is always run automatically on startup -->
     @templates.render({"targetId": "#overlayContainer","template": "#loading"},{"queueRun": "Instant"});
     @templates.render({"targetId": "#content","template": "#basic"},{"queueRun": "Instant"});
-    -openlayers.addMap({"center":[-327078.93,7341533.72],"zoom":6});
-    -openlayers.addLayer({"name":"osm","type":"mapbox","key":"pk.eyJ1IjoibWlkZ2V0amFrZSIsImEiOiJjaXgzaG93cm8wMDExMnRtZ2d3ajl5aHZuIn0.LfqnlcrLwe7xnAvD1zBkCQ"});
-    -openlayers.addLayer({"name":"route","type":"vector","style":"styles.reportStyle"});
-    -openlayers.addLayer({"name":"spotPoints","type":"vector","style":"styles.reportStyle"});
-    -openlayers.addLayer({"name":"schoolPoints","type":"vector","style":"styles.schoolStyle"});
+    <!-- -openlayers.addMap({"center":[-327078.93,7341533.72],"zoom":6});-->
+    <!-- -openlayers.addLayer({"name":"osm","type":"mapbox","key":"pk.eyJ1IjoibWlkZ2V0amFrZSIsImEiOiJjaXgzaG93cm8wMDExMnRtZ2d3ajl5aHZuIn0.LfqnlcrLwe7xnAvD1zBkCQ"});-->
+    <!-- -openlayers.addLayer({"name":"route","type":"vector","style":"styles.reportStyle"});-->
+    <!-- -openlayers.addLayer({"name":"spotPoints","type":"vector","style":"styles.reportStyle"});-->
+    <!-- -openlayers.addLayer({"name":"schoolPoints","type":"vector","style":"styles.schoolStyle"});-->
+    -mapbox.addMap({});
+    -mapbox.addSource({"featureType":"LineString", "name": "route", "paint": { "line-width": 3, "line-color": "#1986f4" }});
+    -mapbox.addSource({"featureType":"Point", "name": "spotPoints", "paint": { "circle-color": "#0eeadb", "circle-radius": 8 }});
+    -mapbox.addSource({
+        "featureType":"Point",
+        "name": "schoolPoints",
+        "paint": {
+            "circle-color": [
+                "match",
+                ["get", "org_name"],
+                "Adventure Syndicate", "#e0ab0b",
+                "#0eeadb"
+            ],
+            "circle-radius": 5,
+            "circle-stroke-width": 3,
+            "circle-stroke-color": [
+                "match",
+                ["get", "org_name"],
+                "Adventure Syndicate", "#bc7018",
+                "#0aafa4"
+            ]
+        }
+    });
     -internals.setMemory({"name":"filters", "value":["school","workplace"], "mode": "Session"});
     -input.initialiseFilterList({});
     {{#include #getRoute}}
@@ -110,14 +133,13 @@
 
 <script id="getRoute" type="text/ourthings">
     -api.post({"url":"{{config.api}}","body":{"_token":"{{config.token}}","schema":"adventuresyndicate","app":"map_tracker", "api": "feature_api", "action": "get_geojson", "payload": {"_filters":[{"type": "json", "data": "features", "item": "attributes", "prefix": "F", "filter": {"feature_type": "route_line"}}]}}},{"memoryMode":"Session","memoryName":"mapRoute"});
-    -openlayers.addGeojson({"layer":"route","geojson":"{{!^JSON.stringify(memory.mapRoute.value.API.Response)}}"});
-    -openlayers.zoomToLayerExtent({"layer":"route"});
+    -mapbox.setData({"name": "route", "data": "{{!^JSON.stringify(memory.mapRoute.value.API.Response)}}"});
+    -mapbox.zoomToBounds({"name": "route"});
 </script>
 
 <script id="getSpotPoints" type="text/ourthings">
     -api.post({"url":"{{config.api}}","body":{"_token":"{{config.token}}","schema":"adventuresyndicate","app":"map_tracker", "api": "feature_api", "action": "get_geojson", "payload": {"_filters":[{"type": "json", "data": "features", "item": "attributes", "prefix": "F", "filter": {"feature_type": "spot_tracker_points"}}]}}},{"memoryMode":"Session","memoryName":"spotPoints"});
-    -openlayers.addGeojson({"layer":"spotPoints","geojson":"{{!^JSON.stringify(memory.spotPoints.value.API.Response)}}"});
-    <!-- -openlayers.zoomToLayerExtent({"layer":"spotPoints"});-->
+    -mapbox.setData({"name": "spotPoints", "data":"{{!^JSON.stringify(memory.spotPoints.value.API.Response)}}"});
 </script>
 
 <script id="getSchools" type="text/ourthings">
@@ -139,8 +161,7 @@
     }, {
         "memoryMode":"Session","memoryName":"schoolPoints"
     });
-    -openlayers.clearLayer({"layer":"schoolPoints"});
-    -openlayers.addGeojson({"layer":"schoolPoints","geojson":"{{!^JSON.stringify(memory.schoolPoints.value.API.Response)}}"});
+    -mapbox.setData({"name": "schoolPoints", "data":"{{!^JSON.stringify(memory.schoolPoints.value.API.Response)}}"});
 </script>
 
 <script id="updateLoop" type="text/ourthings">
@@ -164,8 +185,7 @@
         "memoryName":"schoolPoints",
         "queuePrepare":"updateLoop"
     });
-    -openlayers.clearLayer({"layer":"schoolPoints"});
-    -openlayers.addGeojson({"layer":"schoolPoints","geojson":"{{!^JSON.stringify(memory.schoolPoints.value.API.Response)}}"});
+    -mapbox.setData({"name": "schoolPoints", "data":"{{!^JSON.stringify(memory.schoolPoints.value.API.Response)}}"});
     {{#include #getLeaders}}
     -internals.execute({"name":"updateLoop"},{"queueTimer":10000,"queueRun":"Instant"});
     @internals.execute({"name":"updateLoop"},{"queueTimer":10000,"queueRun":"Instant"});
@@ -192,7 +212,6 @@
         "memoryName":"schoolPoints",
         "queuePrepare":"updatePoints"
     });
-    -openlayers.clearLayer({"layer":"schoolPoints"});
-    -openlayers.addGeojson({"layer":"schoolPoints","geojson":"{{!^JSON.stringify(memory.schoolPoints.value.API.Response)}}"});
+    -mapbox.setData({"name": "schoolPoints", "data":"{{!^JSON.stringify(memory.schoolPoints.value.API.Response)}}"});
     {{#include #getLeaders}}
 </script>

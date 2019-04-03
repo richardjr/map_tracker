@@ -28,8 +28,7 @@ class Loop extends Queueable {
 
             window.memory.leaderboardRankings.push(data);
             templateHTML +=
-                '<div class="list-item"' +
-                ' @openlayers.searchForFeature({"layer":"schoolPoints","property":"org_name","value":"' + data.org_name +  '"});>' +
+                '<div class="list-item" @mapbox.paintQueryFeatures({"name": "schoolPoints", "paint": { "type": "circle-color", "value": ["' + data.org_name + '", "#367d18"]}}); >' +
                 '  <span class="list-item-icon position-' + i + '">#' + i +  '</span>' +
                 '  <div class="list-secondary">' +
                 '    <span class="list-item-title">' + data.org_name +  '</span>' +
