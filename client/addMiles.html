@@ -18,6 +18,13 @@
                 <span>Distance (miles):</span>
                 <input id="distance" type="number" name="distance"/>
             </div>
+            <div class="input-couple">
+                <span>Category:</span>
+                <select id="category" name="category">
+                    <option value="school">School</option>
+                    <option value="workplace">Workplace</option>
+                </select>
+            </div>
             <button id="mileageSubmit" @api.post({
                 "url": "{{config.api}}",
                 "body": {
@@ -31,7 +38,8 @@
                             "feature_type": "distance_record",
                             "distance":"{{!^queue.getElement('#distance').value * 1609}}",
                             "org_id":"{{!queue.getElement('#schoolID').value}}",
-                            "org_rider":"{{!queue.getElement('#riderName').value}}"
+                            "org_rider":"{{!queue.getElement('#riderName').value}}",
+                            "category":"{{!queue.getElement('#category').value}}"
                         }
                     }
                 }
