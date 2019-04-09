@@ -4,14 +4,17 @@ class Loop extends Queueable {
     multi(pid,json) {
         let templateHTML = '<div class="list-test">';
         window.memory.leaderboardRankings = [];
-
         let dataList = json.data;
-        dataList.sort((a,b) => {
-            if (Number(a.distance_miles) < Number(b.distance_miles)) return 1;
-            if (Number(a.distance_miles) > Number(b.distance_miles)) return -1;
-            return 0;
-        });
-        console.log(dataList);
+
+        if(dataList.length > 0) {
+            dataList.sort((a, b) => {
+                if (Number(a.distance_miles) < Number(b.distance_miles)) return 1;
+                if (Number(a.distance_miles) > Number(b.distance_miles)) return -1;
+                return 0;
+            });
+        } else {
+            dataList = [];
+        }
 
         let i = 1;
         for(let data of dataList) {
@@ -25,8 +28,7 @@ class Loop extends Queueable {
 
             window.memory.leaderboardRankings.push(data);
             templateHTML +=
-                '<div class="list-item"' +
-                ' @openlayers.searchForFeature({"layer":"schoolPoints","property":"org_name","value":"' + data.org_name +  '"});>' +
+                '<div class="list-item" @mapbox.paintQueryFeatures({"name": "schoolPoints", "paint": { "type": "circle-color", "value": ["' + data.org_name + '", "#367d18"]}}); >' +
                 '  <span class="list-item-icon position-' + i + '">#' + i +  '</span>' +
                 '  <div class="list-secondary">' +
                 '    <span class="list-item-title">' + data.org_name +  '</span>' +

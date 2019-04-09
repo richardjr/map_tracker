@@ -13,6 +13,86 @@ class Input extends Queueable {
         this.finished(pid, this.queue.DEFINE.FIN_OK);
     }
 
+    initialiseFilterList(pid, json) {
+        const filterList = [
+            JSON.stringify({
+                type: "json",
+                data: "tracker_points",
+                item: "attributes",
+                filter: {
+                    org_name: "Adventure Syndicate"
+                }
+            })
+        ];
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const categories = urlParams.get('categories');
+        if (categories ) {
+            window.memory.filters.value = categories.split(',');
+
+            if (window.memory.filters.value.indexOf('school') < 0) {
+                document.querySelector('#schoolsSVG').classList.add('hidden-svg');
+            }
+
+            if (window.memory.filters.value.indexOf('workplace') < 0) {
+                document.querySelector('#workplaceSVG').classList.add('hidden-svg');
+            }
+        }
+
+
+
+        for(const value of window.memory.filters.value) {
+            filterList.push(JSON.stringify({
+                type: "json",
+                data: "tracker_points",
+                item: "attributes",
+                join: "or",
+                filter: {
+                    category: value
+                }
+            }))
+        }
+
+        window.memory.filterList = filterList;
+        this.finished(pid, this.queue.DEFINE.FIN_OK);
+    }
+
+    updateFilters(pid, json) {
+        const index = window.memory.filters.value.indexOf(json.value);
+        if(index > -1) {
+            window.memory.filters.value.splice(index, 1)
+        } else {
+            window.memory.filters.value.push(json.value);
+        }
+
+        const filterList = [
+            JSON.stringify({
+                type: "json",
+                data: "tracker_points",
+                item: "attributes",
+                filter: {
+                    org_name: "Adventure Syndicate"
+                }
+            })
+        ];
+
+        for(const value of window.memory.filters.value) {
+            filterList.push(JSON.stringify({
+                type: "json",
+                data: "tracker_points",
+                item: "attributes",
+                join: "or",
+                filter: {
+                    category: value
+                }
+            }))
+        }
+
+        window.memory.filterList = filterList;
+
+        this.finished(pid, this.queue.DEFINE.FIN_OK);
+    }
+
     submitMileage(pid, json) {
         console.log('Submitting');
         window.memory.mileageForm.value.distance *= 1609.344;

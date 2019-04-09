@@ -7,6 +7,7 @@ import Openlayers from './olExtended';
 import Internals from '@nautoguide/ourthings/Queueable/Internals';
 import Loop from './Loop';
 import Input from './Input';
+import Mapbox from './Mapbox';
 
 let queue;
 queue = new Queue({
@@ -17,6 +18,7 @@ queue = new Queue({
     internals: Internals,
     loop: Loop,
     input: Input,
+    mapbox: Mapbox,
 });
 window.queue=queue;
 

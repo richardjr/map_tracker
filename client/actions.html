@@ -2,17 +2,44 @@
     <!-- init is always run automatically on startup -->
     @templates.render({"targetId": "#overlayContainer","template": "#loading"},{"queueRun": "Instant"});
     @templates.render({"targetId": "#content","template": "#basic"},{"queueRun": "Instant"});
-    -openlayers.addMap({"center":[-327078.93,7341533.72],"zoom":6});
-    -openlayers.addLayer({"name":"osm","type":"osm"});
-    -openlayers.addLayer({"name":"route","type":"vector","style":"styles.reportStyle"});
-    -openlayers.addLayer({"name":"spotPoints","type":"vector","style":"styles.reportStyle"});
-    -openlayers.addLayer({"name":"schoolPoints","type":"vector","style":"styles.schoolStyle"});
+    <!-- -openlayers.addMap({"center":[-327078.93,7341533.72],"zoom":6});-->
+    <!-- -openlayers.addLayer({"name":"osm","type":"mapbox","key":"pk.eyJ1IjoibWlkZ2V0amFrZSIsImEiOiJjaXgzaG93cm8wMDExMnRtZ2d3ajl5aHZuIn0.LfqnlcrLwe7xnAvD1zBkCQ"});-->
+    <!-- -openlayers.addLayer({"name":"route","type":"vector","style":"styles.reportStyle"});-->
+    <!-- -openlayers.addLayer({"name":"spotPoints","type":"vector","style":"styles.reportStyle"});-->
+    <!-- -openlayers.addLayer({"name":"schoolPoints","type":"vector","style":"styles.schoolStyle"});-->
+    -mapbox.addMap({"style": "./zoomstack.json"});
+    <!-- -mapbox.addMap({"style": "https://raw.githubusercontent.com/OrdnanceSurvey/OS-Open-Zoomstack-Stylesheets/master/Vector%20Tiles/Mapbox%20GL%20Styles/OS%20Open%20Zoomstack%20-%20Road.json"});-->
+    -mapbox.addSource({"featureType":"LineString", "name": "route", "paint": { "line-width": 3, "line-color": "#1986f4" }});
+    -mapbox.addSource({"featureType":"Point", "name": "spotPoints", "paint": { "circle-color": "#0eeadb", "circle-radius": 8 }});
+    -mapbox.addSource({
+        "featureType":"Point",
+        "name": "schoolPoints",
+        "paint": {
+            "circle-color": [
+                "match",
+                ["get", "org_name"],
+                "Adventure Syndicate", "#e0ab0b",
+                "#0eeadb"
+            ],
+            "circle-radius": 5,
+            "circle-stroke-width": 3,
+            "circle-stroke-color": [
+                "match",
+                ["get", "org_name"],
+                "Adventure Syndicate", "#bc7018",
+                "#0aafa4"
+            ]
+        }
+    });
+    -internals.setMemory({"name":"filters", "value":["school","workplace"], "mode": "Session"});
+    -input.initialiseFilterList({});
     {{#include #getRoute}}
     {{#include #getSpotPoints}}
     {{#include #getLeaders}}
     {{#include #getSchools}}
     -templates.render({"targetId": "#overlayContainer", "template": "#empty"},{"queueRun": "Instant"});
     {{#include #updatePoints}}
+    {{#include #updateLoop}}
 </script>
 
 <script id="empty" type="text/html">
@@ -28,14 +55,48 @@
 <script id="basic" type="text/html">
     <div id="map"></div>
     <div id="leaderboard" class="list">
+        <div id="filters">
+            <button id="filter-expand" @elements.toggleClass({"targetId":"#filter-list","class":"hidden"},{"queueEvent":"mousedown"});>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/><path d="M0 0h24v24H0z" fill="none"/></svg>
+            </button>
+            <div id="filter-list" class="card filter-card hidden">
+                <div class="list">
+                    <div class="list-item"
+                        @elements.toggleClass({"targetId":"#schoolsSVG","class":"hidden-svg"},{"queueEvent":"mousedown"});
+                        -input.updateFilters({"value":"school"});
+                        -internals.execute({"name":"updatePoints"});
+                    >
+                        <span class="checkbox">
+                            <svg id="schoolsSVG" class="checkbox-svg" focusable="false" viewBox="2 2 20 20" aria-hidden="true" role="presentation"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg>
+                        </span>
+                        <span>Schools</span>
+                    </div>
+
+                    <div class="list-item"
+                        @elements.toggleClass({"targetId":"#workplaceSVG","class":"hidden-svg"},{"queueEvent":"mousedown"});
+                        -input.updateFilters({"value":"workplace"});
+                        -internals.execute({"name":"updatePoints"});
+                    >
+                        <span class="checkbox">
+                            <svg id="workplaceSVG" class="checkbox-svg" focusable="false" viewBox="2 2 20 20" aria-hidden="true" role="presentation"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path></svg>
+                        </span>
+                        <span>Workplaces</span>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="list-title">
             <span class="title">Leaderboard</span>
             <div id="menu">
-                <button id="menu-toggle" @elements.addClass({"targetId":"#side-menu","class":"menu-open"},{"queueEvent":"mousedown"});><</button>
+                <div id="hamburger"
+                     @elements.toggleClass({"targetId":"#hamburger","class":"open"});
+                     -elements.toggleClass({"targetId":"#side-menu","class":"menu-open"});
+                >
+                    <span class="burger burger1"></span>
+                    <span class="burger burger2"></span>
+                    <span class="burger burger3"></span>
+                </div>
                 <div id="side-menu" class="card side-menu">
-                    <div class="menu-topper">
-                        <button class="remove-shadow hide-button" @elements.removeClass({"targetId":"#side-menu","class":"menu-open"},{"queueEvent":"mousedown"});>X</button>
-                    </div>
                     <div class="menu-item">About</div>
                     <div class="menu-item">Register</div>
                     <div class="menu-item" @templates.render({"targetId": "#overlayContainer","template": "#mileageDialog"});>Add miles</div>
@@ -54,26 +115,85 @@
 </script>
 
 <script id="getLeaders" type="text/html">
-    -api.post({"url":"{{config.api}}","body":{"_token":"{{config.token}}","schema":"adventuresyndicate","app":"map_tracker", "api": "reporting_api", "action": "run_report", "payload":{"report_name":"leaderboard"}}},{"memoryMode":"Session","memoryName":"leaderboard"});
+    -api.post({
+        "url": "{{config.api}}",
+        "body":{
+            "_token":"{{config.token}}",
+            "schema":"adventuresyndicate",
+            "app":"map_tracker",
+            "api": "reporting_api",
+            "action": "run_report",
+            "payload":{
+                "report_name":"leaderboard",
+                "_filters": [
+                    "{{!^memory.filterList}}"
+                ]
+            }
+        }
+    }, {
+        "memoryMode":"Session","memoryName":"leaderboard"
+    });
     -loop.multi({"targetId":"#list","template":"#leaderboardItem","data":"{{!^JSON.stringify(memory.leaderboard.value.API.Response)}}"});
 </script>
 
 <script id="getRoute" type="text/ourthings">
     -api.post({"url":"{{config.api}}","body":{"_token":"{{config.token}}","schema":"adventuresyndicate","app":"map_tracker", "api": "feature_api", "action": "get_geojson", "payload": {"_filters":[{"type": "json", "data": "features", "item": "attributes", "prefix": "F", "filter": {"feature_type": "route_line"}}]}}},{"memoryMode":"Session","memoryName":"mapRoute"});
-    -openlayers.addGeojson({"layer":"route","geojson":"{{!^JSON.stringify(memory.mapRoute.value.API.Response)}}"});
-    -openlayers.zoomToLayerExtent({"layer":"route"});
+    -mapbox.setData({"name": "route", "data": "{{!^JSON.stringify(memory.mapRoute.value.API.Response)}}"});
+    -mapbox.zoomToBounds({"name": "route"});
 </script>
 
 <script id="getSpotPoints" type="text/ourthings">
     -api.post({"url":"{{config.api}}","body":{"_token":"{{config.token}}","schema":"adventuresyndicate","app":"map_tracker", "api": "feature_api", "action": "get_geojson", "payload": {"_filters":[{"type": "json", "data": "features", "item": "attributes", "prefix": "F", "filter": {"feature_type": "spot_tracker_points"}}]}}},{"memoryMode":"Session","memoryName":"spotPoints"});
-    -openlayers.addGeojson({"layer":"spotPoints","geojson":"{{!^JSON.stringify(memory.spotPoints.value.API.Response)}}"});
-    <!-- -openlayers.zoomToLayerExtent({"layer":"spotPoints"});-->
+    -mapbox.setData({"name": "spotPoints", "data":"{{!^JSON.stringify(memory.spotPoints.value.API.Response)}}"});
 </script>
 
 <script id="getSchools" type="text/ourthings">
-    -api.post({"url":"{{config.api}}","body":{"_token":"{{config.token}}","schema":"adventuresyndicate","app":"map_tracker", "api": "feature_api", "action": "get_geojson", "payload": {"_view": "tracker_points"}}},{"memoryMode":"Session","memoryName":"schoolPoints"});
-    -openlayers.clearLayer({"layer":"schoolPoints"});
-    -openlayers.addGeojson({"layer":"schoolPoints","geojson":"{{!^JSON.stringify(memory.schoolPoints.value.API.Response)}}"});
+    -api.post({
+        "url": "{{config.api}}",
+        "body":{
+            "_token":"{{config.token}}",
+            "schema":"adventuresyndicate",
+            "app":"map_tracker",
+            "api": "feature_api",
+            "action": "get_geojson",
+            "payload": {
+                "_view": "tracker_points",
+                "_filters": [
+                    "{{!^memory.filterList}}"
+                ]
+            }
+        }
+    }, {
+        "memoryMode":"Session","memoryName":"schoolPoints"
+    });
+    -mapbox.setData({"name": "schoolPoints", "data":"{{!^JSON.stringify(memory.schoolPoints.value.API.Response)}}"});
+</script>
+
+<script id="updateLoop" type="text/ourthings">
+    @api.post({
+        "url":"{{config.api}}",
+        "body":{
+            "_token":"{{config.token}}",
+            "schema":"adventuresyndicate",
+            "app":"map_tracker",
+            "api": "feature_api",
+            "action": "get_geojson",
+            "payload": {
+                "_view": "tracker_points",
+                "_filters": [
+                    "{{!^memory.filterList}}"
+                ]
+            }
+        }
+    }, {
+        "memoryMode":"Session",
+        "memoryName":"schoolPoints",
+        "queuePrepare":"updateLoop"
+    });
+    -mapbox.setData({"name": "schoolPoints", "data":"{{!^JSON.stringify(memory.schoolPoints.value.API.Response)}}"});
+    {{#include #getLeaders}}
+    -internals.execute({"name":"updateLoop"},{"queueTimer":10000,"queueRun":"Instant"});
+    @internals.execute({"name":"updateLoop"},{"queueTimer":10000,"queueRun":"Instant"});
 </script>
 
 <script id="updatePoints" type="text/ourthings">
@@ -86,7 +206,10 @@
             "api": "feature_api",
             "action": "get_geojson",
             "payload": {
-                "_view": "tracker_points"
+                "_view": "tracker_points",
+                "_filters": [
+                    "{{!^memory.filterList}}"
+                ]
             }
         }
     }, {
@@ -94,8 +217,6 @@
         "memoryName":"schoolPoints",
         "queuePrepare":"updatePoints"
     });
-    -openlayers.clearLayer({"layer":"schoolPoints"});
-    -openlayers.addGeojson({"layer":"schoolPoints","geojson":"{{!^JSON.stringify(memory.schoolPoints.value.API.Response)}}"});
-    -internals.execute({"name":"updatePoints"},{"queueTimer":10000,"queueRun":"Instant"});
-    @internals.execute({"name":"updatePoints"},{"queueTimer":10000,"queueRun":"Instant"});
+    -mapbox.setData({"name": "schoolPoints", "data":"{{!^JSON.stringify(memory.schoolPoints.value.API.Response)}}"});
+    {{#include #getLeaders}}
 </script>
