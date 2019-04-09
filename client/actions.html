@@ -7,7 +7,8 @@
     <!-- -openlayers.addLayer({"name":"route","type":"vector","style":"styles.reportStyle"});-->
     <!-- -openlayers.addLayer({"name":"spotPoints","type":"vector","style":"styles.reportStyle"});-->
     <!-- -openlayers.addLayer({"name":"schoolPoints","type":"vector","style":"styles.schoolStyle"});-->
-    -mapbox.addMap({});
+    -mapbox.addMap({"style": "./zoomstack.json"});
+    <!-- -mapbox.addMap({"style": "https://raw.githubusercontent.com/OrdnanceSurvey/OS-Open-Zoomstack-Stylesheets/master/Vector%20Tiles/Mapbox%20GL%20Styles/OS%20Open%20Zoomstack%20-%20Road.json"});-->
     -mapbox.addSource({"featureType":"LineString", "name": "route", "paint": { "line-width": 3, "line-color": "#1986f4" }});
     -mapbox.addSource({"featureType":"Point", "name": "spotPoints", "paint": { "circle-color": "#0eeadb", "circle-radius": 8 }});
     -mapbox.addSource({
@@ -87,11 +88,15 @@
         <div class="list-title">
             <span class="title">Leaderboard</span>
             <div id="menu">
-                <button id="menu-toggle" @elements.addClass({"targetId":"#side-menu","class":"menu-open"},{"queueEvent":"mousedown"});><</button>
+                <div id="hamburger"
+                     @elements.toggleClass({"targetId":"#hamburger","class":"open"});
+                     -elements.toggleClass({"targetId":"#side-menu","class":"menu-open"});
+                >
+                    <span class="burger burger1"></span>
+                    <span class="burger burger2"></span>
+                    <span class="burger burger3"></span>
+                </div>
                 <div id="side-menu" class="card side-menu">
-                    <div class="menu-topper">
-                        <button class="remove-shadow hide-button" @elements.removeClass({"targetId":"#side-menu","class":"menu-open"},{"queueEvent":"mousedown"});>X</button>
-                    </div>
                     <div class="menu-item">About</div>
                     <div class="menu-item">Register</div>
                     <div class="menu-item" @templates.render({"targetId": "#overlayContainer","template": "#mileageDialog"});>Add miles</div>

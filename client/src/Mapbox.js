@@ -40,7 +40,9 @@ export default class Mapbox extends Queueable {
             zoom: options.zoom, // starting zoom
         });
 
+        map.addControl(new MapboxGL.NavigationControl(), 'top-left');
         this.maps[options.map]={ map, layers: {} };
+        console.log(map);
 
         map.on('load', () => {
             this.finished(pid,self.queue.DEFINE.FIN_OK);
@@ -53,7 +55,7 @@ export default class Mapbox extends Queueable {
      * @param {object} json
      * @param {string} json.map - name for the map (used to reference)
      * @param {string} json.name - Name for the layer/source
-     * @param {string} json.featureType - The type of feature for the layer one of ['Point', 'Line', 'Polygon', 'MultiLineString']
+     * @param {string} json.featureType - The type of feature for the layer one of ['Point', 'Line', 'Polygon', 'LineString']
      * @param {string|object} json.data - Set the data of the source, this could also be a url for the data
      * @example
      * mapbox.addSource({"map": "testMap", "name": "newLayer", "featureType": "Point", "data": "https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_10m_ports.geojson"});
