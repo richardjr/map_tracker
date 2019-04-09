@@ -60,6 +60,7 @@ if(payload_param.operation === 'INSERT' && payload_param.feature_type.feature_ty
                 messengerName: org_check.json_data.org_name,
                 org_name: org_check.json_data.org_name,
                 org_id: org_check.json_data.org_id,
+                category: org_check.json_data.category,
                 point_type : 'derived',
                 org_rider : payload_param.new.attributes.org_rider !== undefined ? payload_param.new.attributes.org_rider : org_check.json_data.org_name + ' total'
             }
