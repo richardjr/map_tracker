@@ -43,6 +43,16 @@ body {
     position: relative;
 }
 
+#createdBy {
+    position: absolute;
+    left: 0;
+    bottom: 8px;
+    transform: translate(calc(-100% - 8px), 0);
+    outline: #000;
+    color: #444;
+    text-decoration: none;
+}
+
 #filters {
     position: absolute;
     left: -38px;
@@ -122,6 +132,11 @@ button:hover {
     justify-content: flex-start;
     text-decoration: none;
     border-radius: 0;
+}
+
+.highlighted {
+    background: rgba(0,0,0,0.12);
+    border-radius: 3px;
 }
 
 .list-item:hover {

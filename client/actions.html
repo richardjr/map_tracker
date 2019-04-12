@@ -37,6 +37,7 @@
     {{#include #getSpotPoints}}
     {{#include #getLeaders}}
     {{#include #getSchools}}
+    -mapbox.addEventListener({"name": "schoolPoints"});
     -templates.render({"targetId": "#overlayContainer", "template": "#empty"},{"queueRun": "Instant"});
     {{#include #updatePoints}}
     {{#include #updateLoop}}
@@ -97,14 +98,15 @@
                     <span class="burger burger3"></span>
                 </div>
                 <div id="side-menu" class="card side-menu">
-                    <div class="menu-item">About</div>
                     <div class="menu-item">Register</div>
                     <div class="menu-item" @templates.render({"targetId": "#overlayContainer","template": "#mileageDialog"});>Add miles</div>
-                    <div class="menu-item">Contact us</div>
                 </div>
             </div>
         </div>
         <div id="list"></div>
+        <a id="createdBy" class="card" href="https://nautoguide.com" target="_blank">
+            <span>Created by Nautoguide</span>
+        </a>
     </div>
 </script>
 

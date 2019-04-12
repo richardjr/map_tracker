@@ -42,7 +42,6 @@ export default class Mapbox extends Queueable {
 
         map.addControl(new MapboxGL.NavigationControl(), 'top-left');
         this.maps[options.map]={ map, layers: {} };
-        console.log(map);
 
         map.on('load', () => {
             this.finished(pid,self.queue.DEFINE.FIN_OK);
@@ -80,6 +79,55 @@ export default class Mapbox extends Queueable {
 
         this._addLayer(options);
 
+        this.finished(pid,self.queue.DEFINE.FIN_OK);
+    }
+
+    addEventListener(pid, json) {
+        const options = Object.assign({
+            map: 'default',
+            name: 'default',
+        }, json);
+        const self = this;
+
+        this.maps[options.map].map.on('click', options.name, function (e) {
+            const orgName = e.features[0].properties.org_name;
+            const list = document.querySelector('#leader-list');
+            window.highlighted = orgName;
+
+            for(const child of list.children) {
+                if (child.querySelector('.list-item-title').innerHTML === orgName) {
+                    child.className = 'list-item highlighted'
+                } else {
+                    child.className = 'list-item'
+                }
+            }
+
+            const newPaint = {
+                value: [orgName, '#367d18'],
+                type: 'circle-color',
+            };
+
+            let paint = JSON.parse(JSON.stringify(self.maps[options.map].layers[options.name])).defaultStyle[newPaint.type];
+            let final = null;
+            if(typeof paint === 'object') {
+                final = paint.splice([paint.length - 1], 1);
+                for (let value of newPaint.value) {
+                    for (let i = 0; i < paint.length; i += 2) {
+                        if (value === paint[i]) {
+                            paint.splice(i, 2);
+                        }
+                    }
+                }
+                paint = [...paint, ...newPaint.value];
+
+                paint.push(final[0]);
+            } else {
+                paint = newPaint.value;
+            }
+
+            self.maps[options.map].map.setPaintProperty(options.name, newPaint.type, paint);
+
+        });
         this.finished(pid,self.queue.DEFINE.FIN_OK);
     }
 

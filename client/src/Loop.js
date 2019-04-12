@@ -1,8 +1,9 @@
 import Queueable from "@nautoguide/ourthings/Queueable";
+window.highlighted = '';
 
 class Loop extends Queueable {
     multi(pid,json) {
-        let templateHTML = '<div class="list-test">';
+        let templateHTML = '<div id="leader-list" class="list-test">';
         window.memory.leaderboardRankings = [];
         let dataList = json.data;
 
@@ -28,7 +29,10 @@ class Loop extends Queueable {
 
             window.memory.leaderboardRankings.push(data);
             templateHTML +=
-                '<div class="list-item" @mapbox.paintQueryFeatures({"name": "schoolPoints", "paint": { "type": "circle-color", "value": ["' + data.org_name + '", "#367d18"]}}); >' +
+                '<div class="list-item ' + (window.highlighted === data.org_name ? 'highlighted' : '') + '" ' +
+                    '@mapbox.paintQueryFeatures({"name": "schoolPoints", "paint": { "type": "circle-color", "value": ["' + data.org_name + '", "#367d18"]}}); ' +
+                    '-loop.highlight({"name": "' + data.org_name + '"});' +
+                '>' +
                 '  <span class="list-item-icon position-' + i + '">#' + i +  '</span>' +
                 '  <div class="list-secondary">' +
                 '    <span class="list-item-title">' + data.org_name +  '</span>' +
@@ -47,6 +51,21 @@ class Loop extends Queueable {
         let targetDom = document.querySelector(json.targetId);
         this.queue.renderToDom(targetDom, parsedTemplate, this.queue.DEFINE.RENDER_INSERT);
         this.queue.commandsBind(commands);
+
+        this.finished(pid, this.queue.DEFINE.FIN_OK);
+    }
+
+    highlight(pid, json) {
+        const list = document.querySelector('#leader-list');
+        window.highlighted = json.name;
+
+        for(const child of list.children) {
+            if (child.querySelector('.list-item-title').innerHTML === json.name) {
+                child.className = 'list-item highlighted'
+            } else {
+                child.className = 'list-item'
+            }
+        }
 
         this.finished(pid, this.queue.DEFINE.FIN_OK);
     }
