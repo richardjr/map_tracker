@@ -36,7 +36,11 @@ FROM (
 SELECT distinct on(attributes->>'org_name') feature_id,
        wkb_geometry,
 	   creation_date,
-       attributes || jsonb_build_object( 'dateTime', creation_date, 'distance_km', ROUND((attributes->>'distance')::NUMERIC/1000, 2), 'distance_miles', ROUND((attributes->>'distance')::NUMERIC * 0.000621371, 2)) as attributes,
+       attributes || jsonb_build_object( 'dateTime', 		creation_date,
+       									'distance_km', 		ROUND((attributes->>'distance')::NUMERIC/1000, 2),
+       									'distance_miles', 	ROUND((attributes->>'distance')::NUMERIC * 0.000621371, 2),
+       									'category', 		COALESCE(attributes->>'category', 'school')
+       									) as attributes,
        layer,
 	   feature_type_id,
 	   acl
@@ -47,6 +51,7 @@ ORDER BY attributes->>'org_name', (attributes->>'distance')::NUMERIC DESC
 ) FOO ORDER BY attributes->>'distance_km' DESC;
 
 
+GRANT SELECT ON ng_adventuresyndicate.tracker_points TO PUBLIC;
 
 DROP VIEW IF EXISTS ng_adventuresyndicate.route;
 CREATE VIEW ng_adventuresyndicate.route AS
@@ -56,3 +61,5 @@ SELECT  feature_id,
         layer
 FROM ng_adventuresyndicate.features
 WHERE attributes @> jsonb_build_object('route_name',(SELECT json->>'route_name' FROM ng_adventuresyndicate.application_parameter WHERE name = 'active_route'));
+
+GRANT SELECT ON ng_adventuresyndicate.route TO PUBLIC;
