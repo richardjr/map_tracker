@@ -13,6 +13,16 @@
     -mapbox.addSource({"featureType":"LineString", "name": "route", "paint": { "line-width": 3, "line-color": "#1986f4" }});
     -mapbox.addSource({"featureType":"Point", "name": "spotPoints", "paint": { "circle-color": "#0eeadb", "circle-radius": 8 }});
     -mapbox.addSource({
+        "featureType":"Symbol",
+        "name": "schoolText",
+        "layout": {
+            "text-field": "{org_name}",
+            "text-offset": [0.6, 0],
+            "text-anchor": "left",
+            "text-font": ["Source Sans Pro SemiBold"]
+        }
+    });
+    -mapbox.addSource({
         "featureType":"Point",
         "name": "schoolPoints",
         "paint": {
@@ -194,6 +204,7 @@
         "memoryMode":"Session","memoryName":"schoolPoints"
     });
     -mapbox.setData({"name": "schoolPoints", "data":"{{!^JSON.stringify(memory.schoolPoints.value.API.Response)}}"});
+    -mapbox.setData({"name": "schoolText", "data":"{{!^JSON.stringify(memory.schoolPoints.value.API.Response)}}"});
 </script>
 
 <script id="updateLoop" type="text/ourthings">
@@ -218,6 +229,7 @@
         "queuePrepare":"updateLoop"
     });
     -mapbox.setData({"name": "schoolPoints", "data":"{{!^JSON.stringify(memory.schoolPoints.value.API.Response)}}"});
+    -mapbox.setData({"name": "schoolText", "data":"{{!^JSON.stringify(memory.schoolPoints.value.API.Response)}}"});
     {{#include #getLeaders}}
     -internals.execute({"name":"updateLoop"},{"queueTimer":10000,"queueRun":"Instant"});
     @internals.execute({"name":"updateLoop"},{"queueTimer":10000,"queueRun":"Instant"});
@@ -245,5 +257,6 @@
         "queuePrepare":"updatePoints"
     });
     -mapbox.setData({"name": "schoolPoints", "data":"{{!^JSON.stringify(memory.schoolPoints.value.API.Response)}}"});
+    -mapbox.setData({"name": "schoolText", "data":"{{!^JSON.stringify(memory.schoolPoints.value.API.Response)}}"});
     {{#include #getLeaders}}
 </script>

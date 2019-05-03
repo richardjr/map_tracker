@@ -70,6 +70,7 @@ export default class Mapbox extends Queueable {
             name: 'default',
             featureType: 'Point',
             paint: {},
+            layout: {},
         }, json);
 
         this.maps[options.map].map.addSource(options.name, {
@@ -141,18 +142,35 @@ export default class Mapbox extends Queueable {
      */
     _addLayer(options) {
         const Types = {
-            Point: 'circle',
-            Line: 'line',
-            LineString: 'line',
-            Polygon: 'fill',
+            Point: {
+                type: 'circle',
+                filter: 'Point',
+            },
+            Line: {
+                type: 'line',
+                filter: 'Line',
+            },
+            LineString: {
+                type: 'line',
+                filter: 'LineString',
+            },
+            Polygon: {
+                type: 'fill',
+                filter: 'Polygon',
+            },
+            Symbol: {
+                type: 'symbol',
+                filter: 'Point',
+            },
         };
 
         this.maps[options.map].map.addLayer({
             id: options.name,
-            type: Types[options.featureType],
+            type: Types[options.featureType].type,
             source: options.name,
-            filter: ['==', '$type', options.featureType],
+            filter: ['==', '$type', Types[options.featureType].filter],
             paint: options.paint,
+            layout: options.layout,
         });
 
         this.maps[options.map].layers[options.name] = {
