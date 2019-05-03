@@ -37,6 +37,14 @@ class Input extends Queueable {
             if (window.memory.filters.value.indexOf('workplace') < 0) {
                 document.querySelector('#workplaceSVG').classList.add('hidden-svg');
             }
+
+            if (window.memory.filters.value.indexOf('individual/pair') < 0) {
+                document.querySelector('#indSVG').classList.add('hidden-svg');
+            }
+
+            if (window.memory.filters.value.indexOf('team') < 0) {
+                document.querySelector('#teamSVG').classList.add('hidden-svg');
+            }
         }
 
 

@@ -235,6 +235,49 @@ export default class Mapbox extends Queueable {
      * @param {object} json
      * @param {string} json.map - The map that the querying layer is on
      * @param {string} json.name - The name of the layer to query
+     * @param {string} json.property - The property key to check against
+     * @param {string} json.value - The value of the property that we'll be looking for
+     * @param {int} json.zoom - The final zoom level for viewing the point
+     * @param {int} json.minZoom - The furthest out the map will zoom whilst flying to the point
+     */
+    zoomToFeature(pid, json) {
+        const options = Object.assign({
+            map: 'default',
+            name: '',
+            property: '',
+            value: '',
+            zoom: 11,
+            minZoom: 9,
+        }, json);
+
+        let features = this.maps[options.map].map.getSource(json.name)._data.features;
+        let pointGeom = null;
+
+        for(const feature of features) {
+            if(feature.properties.hasOwnProperty(options.property))
+            if(feature.properties[options.property] === options.value) {
+                pointGeom = feature.geometry.coordinates;
+                break;
+            }
+        }
+
+        if(pointGeom !== null) {
+            this.maps[options.map].map.flyTo({
+                center: pointGeom,
+                zoom: options.zoom,
+                minZoom: options.minZoom,
+            })
+        }
+
+        this.finished(pid,self.queue.DEFINE.FIN_OK);
+    }
+
+    /**
+     * Query and highlight feature depending on the paint features
+     * @param {int} pid
+     * @param {object} json
+     * @param {string} json.map - The map that the querying layer is on
+     * @param {string} json.name - The name of the layer to query
      * @param {object} json.paint - The pain object for querying ans styling
      * @param {string} json.paint.type - The styling type that will be changed for highlighting
      * @param {array} json.paint.value - The list of paint styles for querying e.g. [["get", "feature_name"], "test_name", "#333399"] This will be appended to the current style

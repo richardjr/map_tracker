@@ -31,7 +31,8 @@ class Loop extends Queueable {
             templateHTML +=
                 '<div class="list-item ' + (window.highlighted === data.org_name ? 'highlighted' : '') + '" ' +
                     '@mapbox.paintQueryFeatures({"name": "schoolPoints", "paint": { "type": "circle-color", "value": ["' + data.org_name + '", "#367d18"]}}); ' +
-                    '-loop.highlight({"name": "' + data.org_name + '"});' +
+                    '-loop.highlight({"name": "' + data.org_name + '"}); ' +
+                    '-mapbox.zoomToFeature({"name": "schoolPoints", "property": "org_name", "value": "' + data.org_name + '"});' +
                 '>' +
                 '  <span class="list-item-icon position-' + i + '">#' + i +  '</span>' +
                 '  <div class="list-secondary">' +
