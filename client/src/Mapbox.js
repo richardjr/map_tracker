@@ -42,7 +42,6 @@ export default class Mapbox extends Queueable {
 
         map.addControl(new MapboxGL.NavigationControl(), 'top-left');
         this.maps[options.map]={ map, layers: {} };
-        console.log(map);
 
         map.on('load', () => {
             this.finished(pid,self.queue.DEFINE.FIN_OK);
@@ -71,6 +70,7 @@ export default class Mapbox extends Queueable {
             name: 'default',
             featureType: 'Point',
             paint: {},
+            layout: {},
         }, json);
 
         this.maps[options.map].map.addSource(options.name, {
@@ -80,6 +80,55 @@ export default class Mapbox extends Queueable {
 
         this._addLayer(options);
 
+        this.finished(pid,self.queue.DEFINE.FIN_OK);
+    }
+
+    addEventListener(pid, json) {
+        const options = Object.assign({
+            map: 'default',
+            name: 'default',
+        }, json);
+        const self = this;
+
+        this.maps[options.map].map.on('click', options.name, function (e) {
+            const orgName = e.features[0].properties.org_name;
+            const list = document.querySelector('#leader-list');
+            window.highlighted = orgName;
+
+            for(const child of list.children) {
+                if (child.querySelector('.list-item-title').innerHTML === orgName) {
+                    child.className = 'list-item highlighted'
+                } else {
+                    child.className = 'list-item'
+                }
+            }
+
+            const newPaint = {
+                value: [orgName, '#367d18'],
+                type: 'circle-color',
+            };
+
+            let paint = JSON.parse(JSON.stringify(self.maps[options.map].layers[options.name])).defaultStyle[newPaint.type];
+            let final = null;
+            if(typeof paint === 'object') {
+                final = paint.splice([paint.length - 1], 1);
+                for (let value of newPaint.value) {
+                    for (let i = 0; i < paint.length; i += 2) {
+                        if (value === paint[i]) {
+                            paint.splice(i, 2);
+                        }
+                    }
+                }
+                paint = [...paint, ...newPaint.value];
+
+                paint.push(final[0]);
+            } else {
+                paint = newPaint.value;
+            }
+
+            self.maps[options.map].map.setPaintProperty(options.name, newPaint.type, paint);
+
+        });
         this.finished(pid,self.queue.DEFINE.FIN_OK);
     }
 
@@ -93,18 +142,35 @@ export default class Mapbox extends Queueable {
      */
     _addLayer(options) {
         const Types = {
-            Point: 'circle',
-            Line: 'line',
-            LineString: 'line',
-            Polygon: 'fill',
+            Point: {
+                type: 'circle',
+                filter: 'Point',
+            },
+            Line: {
+                type: 'line',
+                filter: 'Line',
+            },
+            LineString: {
+                type: 'line',
+                filter: 'LineString',
+            },
+            Polygon: {
+                type: 'fill',
+                filter: 'Polygon',
+            },
+            Symbol: {
+                type: 'symbol',
+                filter: 'Point',
+            },
         };
 
         this.maps[options.map].map.addLayer({
             id: options.name,
-            type: Types[options.featureType],
+            type: Types[options.featureType].type,
             source: options.name,
-            filter: ['==', '$type', options.featureType],
+            filter: ['==', '$type', Types[options.featureType].filter],
             paint: options.paint,
+            layout: options.layout,
         });
 
         this.maps[options.map].layers[options.name] = {
@@ -177,6 +243,49 @@ export default class Mapbox extends Queueable {
         }
         const bounds = coordinates.reduce((bounds, coord) =>  bounds.extend(coord), new MapboxGL.LngLatBounds(coordinates[0], coordinates[0]));
         this.maps[options.map].map.fitBounds(bounds, { padding: options.padding });
+
+        this.finished(pid,self.queue.DEFINE.FIN_OK);
+    }
+
+    /**
+     * Query and highlight feature depending on the paint features
+     * @param {int} pid
+     * @param {object} json
+     * @param {string} json.map - The map that the querying layer is on
+     * @param {string} json.name - The name of the layer to query
+     * @param {string} json.property - The property key to check against
+     * @param {string} json.value - The value of the property that we'll be looking for
+     * @param {int} json.zoom - The final zoom level for viewing the point
+     * @param {int} json.minZoom - The furthest out the map will zoom whilst flying to the point
+     */
+    zoomToFeature(pid, json) {
+        const options = Object.assign({
+            map: 'default',
+            name: '',
+            property: '',
+            value: '',
+            zoom: 11,
+            minZoom: 9,
+        }, json);
+
+        let features = this.maps[options.map].map.getSource(json.name)._data.features;
+        let pointGeom = null;
+
+        for(const feature of features) {
+            if(feature.properties.hasOwnProperty(options.property))
+            if(feature.properties[options.property] === options.value) {
+                pointGeom = feature.geometry.coordinates;
+                break;
+            }
+        }
+
+        if(pointGeom !== null) {
+            this.maps[options.map].map.flyTo({
+                center: pointGeom,
+                zoom: options.zoom,
+                minZoom: options.minZoom,
+            })
+        }
 
         this.finished(pid,self.queue.DEFINE.FIN_OK);
     }

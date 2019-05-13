@@ -3,3 +3,4 @@ client/node_modules/
 client/dist/
 client/site/
 client/config.js
+client/Gruntfile.js
