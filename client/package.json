@@ -5,7 +5,9 @@
   "main": "webpack.config.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "deploy": "grunt aws_s3"
+    "deploy": "grunt aws_s3",
+    "build": "webpack",
+    "run": "http-server ./"
   },
   "author": "Jake Barter",
   "license": "ISC",
